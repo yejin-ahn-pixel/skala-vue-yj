@@ -1,11 +1,27 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, watch, watchEffect } from 'vue'
 
-const selectedCity = ref('') // 선택된 도시를 저장하는 ref (초기 값이 빈 문자열임)
-const citySearch = ref('')
-const searchedCity = ref('')
+const selectedCityInfo = ref(null) // 선택된 도시 정보를 저장하는 ref (초기 값이 null임)
+const searchQuery = ref('')
+const searchedCityInfo = ref('')
+const filteredWeatherList = computed(() => {
+  return weatherList.value.filter((weather) => weather.name.includes(searchQuery.value))
+})
+
+watch(selectedCityInfo, (newCity, oldCity) => {
+  if (newCity) {
+    console.log(
+      `선택된 도시가 ${oldCity?.name ?? '없음'}에서 ${newCity.name}(으)로 변경되었습니다.`,
+    )
+  }
+})
+
+watchEffect(() => {
+  console.log(`현재 검색어: ${searchQuery.value}`)
+})
+
 const weatherList = ref([
-  // 날씨 정보를 담은 배열 ref
+  // 날씨 정보를 담은 배열
   {
     id: 'city_01',
     name: '서울',
@@ -41,9 +57,8 @@ const showDetail = (cityName, status) => {
 }
 
 const searchCity = () => {
-  console.log(`검색된 도시: ${citySearch.value}`)
-  searchedCity.value = citySearch.value
-  citySearch.value = ''
+  console.log(`검색된 도시: ${searchQuery.value}`)
+  searchedCityInfo.value = searchQuery.value
 }
 </script>
 
@@ -51,30 +66,33 @@ const searchCity = () => {
   <div class="weather-page">
     <div class="weather-page__header">
       <h1>Weather Page</h1>
-      <p v-if="selectedCity">선택된 도시: {{ selectedCity }}</p>
+      <p v-if="selectedCityInfo">선택된 도시: {{ selectedCityInfo?.name }}</p>
     </div>
 
     <div class="city-search">
       <div class="city-search__row">
         <input
-          :value="citySearch"
-          @input="citySearch = $event.target.value"
+          :value="searchQuery"
+          @input="searchQuery = $event.target.value"
+          @keyup.enter="searchCity"
           type="text"
           placeholder="도시 이름을 입력하세요"
         />
         <button @click="searchCity">검색</button>
       </div>
 
-      <p v-if="searchedCity">입력한 도시: {{ searchedCity }}</p>
+      <p v-if="searchedCityInfo">입력한 도시: {{ searchedCityInfo }}</p>
     </div>
 
     <div class="weather-page__content">
+      <p v-if="filteredWeatherList.length === 0">일치하는 도시가 없습니다.</p>
+
       <div
-        v-for="weather in weatherList"
+        v-for="weather in filteredWeatherList"
         :key="weather.id"
         class="weather-item"
-        :class="{ selected: selectedCity === weather.name }"
-        @click="selectedCity = weather.name"
+        :class="{ selected: selectedCityInfo?.id === weather.id }"
+        @click="selectedCityInfo = weather"
       >
         <div class="weather-item__header">
           <h2>{{ weather.name }}</h2>
