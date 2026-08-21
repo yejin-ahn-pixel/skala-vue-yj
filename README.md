@@ -31,6 +31,18 @@ Weather Composition 과제(2일차) 시작. computed/watch 붙이기 전에 구�
 
 과제 요구사항 1~4번(반응형 상태 관리, computed 활용, watch/watchEffect, 검색 결과 표시)은 확인 결과 통과. 5번(본인만의 반응형 상태·computed·watcher 추가)은 아직 미착수.
 
+## 작업 일지 (2026-08-21)
+
+Weather Component 과제(3일차). WeatherMockup.vue 하나였던 걸 기능 변경 없이 4개 컴포넌트로 분리함.
+
+- `WeatherMockup.vue` → `WeatherParent.vue`로 이름 변경, 상태·computed·watch/watchEffect는 그대로 유지 (요구사항 1)
+- `BaseDashboardCard.vue` 새로 만듦. 제목+아이콘 헤더에 `<slot>`으로 내용물 자리 비워두는 공통 박스 컴포넌트 (요구사항 2)
+- `SearchBar.vue`, `WeatherCard.vue` 새로 만듦. 둘 다 자기 상태 없이 props로 값 받고 emit으로 이벤트 올려보내는 방식 (`update:query`/`search`, `select-card`/`click-detail`)으로 WeatherParent와 통신 (요구사항 3, 4)
+- 각 컴포넌트 담당 CSS를 원래 있던 WeatherParent.vue에서 잘라내서 각자 `<style scoped>`로 이관 (요구사항 5)
+- SearchBar/WeatherCard가 BaseDashboardCard 슬롯 안에 있어도 WeatherParent가 직접 props/emit 바인딩 가능한 것 확인 — 슬롯 콘텐츠는 부모 스코프에서 평가되기 때문 (요구사항 6)
+
+요구사항 1~6번 통과. 7번(본인 컴포넌트 추가 분리)은 2일차 개인화 기능 구현 후 이어서 진행 예정.
+
 ## Recommended IDE Setup
 
 [VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
