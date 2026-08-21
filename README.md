@@ -41,7 +41,20 @@ Weather Component 과제(3일차). WeatherMockup.vue 하나였던 걸 기능 변
 - 각 컴포넌트 담당 CSS를 원래 있던 WeatherParent.vue에서 잘라내서 각자 `<style scoped>`로 이관 (요구사항 5)
 - SearchBar/WeatherCard가 BaseDashboardCard 슬롯 안에 있어도 WeatherParent가 직접 props/emit 바인딩 가능한 것 확인 — 슬롯 콘텐츠는 부모 스코프에서 평가되기 때문 (요구사항 6)
 
-요구사항 1~6번 통과. 7번(본인 컴포넌트 추가 분리)은 2일차 개인화 기능 구현 후 이어서 진행 예정.
+요구사항 1~6번 통과.
+
+### 개인화: 최근 확인한 도시 (Miller's Law, 7±2)
+
+전공(인지과학/심리학)에서 아이디어 가져옴 — 작업기억이 한 번에 담을 수 있는 항목 수가 제한적이라는 개념(Miller's Law)을 "최근 확인한 도시는 최대 5개까지만 보여준다"로 구현. 2일차 요구사항 5번(본인만의 상태·computed·watcher)과 3일차 요구사항 7번(본인 컴포넌트 추가)을 동시에 충족.
+
+1. `recentlyViewed = ref([])` 상태 추가
+2. 기존 `watch(selectedCityInfo)` 안에 로직 추가 — 새로 선택된 도시를 배열에서 중복 제거 후 맨 앞에 `unshift` (재클릭해도 중복 안 쌓이고, 가장 최근이 항상 맨 앞)
+3. `recentCities` computed 추가 — `recentlyViewed`를 앞에서 5개만 `slice`
+4. `recentlyViewed` 전용 watch 추가 — 목록 갱신될 때마다 콘솔 로그 (요구사항이 "watcher 추가"를 명시해서 기존 watch에 얹지 않고 새로 하나 더 만듦)
+5. `RecentlyViewedList.vue` 새 컴포넌트 생성 — props로 `cities` 배열 받아서 칩(chip) 형태로 표시, 클릭하면 `select-card` emit
+6. WeatherParent.vue에 세 번째 `BaseDashboardCard`(제목 "최근 확인한 도시" 🕓)로 감싸서 연결
+
+과제 요구사항 전부(1일차 1번, 2일차 1~5번, 3일차 1~7번) 통과.
 
 ## Recommended IDE Setup
 

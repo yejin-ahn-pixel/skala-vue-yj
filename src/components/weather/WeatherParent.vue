@@ -3,24 +3,34 @@ import { ref, computed, watch, watchEffect } from 'vue'
 import SearchBar from './SearchBar.vue'
 import BaseDashboardCard from './BaseDashboardCard.vue'
 import WeatherCard from './WeatherCard.vue'
+import RecentlyViewedList from './RecentlyViewedList.vue'
 
 const selectedCityInfo = ref(null) // 선택된 도시 정보를 저장하는 ref (초기 값이 null임)
 const searchQuery = ref('')
 const searchedCityInfo = ref('')
+const recentlyViewed = ref([])
 const filteredWeatherList = computed(() => {
   return weatherList.value.filter((weather) => weather.name.includes(searchQuery.value))
 })
+const recentCities = computed(() => recentlyViewed.value.slice(0, 5))
 
 watch(selectedCityInfo, (newCity, oldCity) => {
   if (newCity) {
     console.log(
       `선택된 도시가 ${oldCity?.name ?? '없음'}에서 ${newCity.name}(으)로 변경되었습니다.`,
     )
+
+    recentlyViewed.value = recentlyViewed.value.filter((city) => city.id !== newCity.id)
+    recentlyViewed.value.unshift(newCity)
   }
 })
 
 watchEffect(() => {
   console.log(`현재 검색어: ${searchQuery.value}`)
+})
+
+watch(recentlyViewed, (list) => {
+  console.log(`최근 확인 목록 갱신: ${list.map((city) => city.name).join(', ')}`)
 })
 
 const weatherList = ref([
@@ -92,6 +102,10 @@ const searchCity = () => {
         @select-card="selectedCityInfo = $event"
         @click-detail="showDetail($event.name, $event.status)"
       />
+    </BaseDashboardCard>
+
+    <BaseDashboardCard title="최근 확인한 도시" icon="🕓">
+      <RecentlyViewedList :cities="recentCities" @select-card="selectedCityInfo = $event" />
     </BaseDashboardCard>
   </div>
 </template>
